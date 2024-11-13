@@ -1,9 +1,10 @@
 #!/usr/bin/python3
-
+print("file storage")
 """
 
 """
 
+import json
 import os
 
 class FileStorage:
@@ -18,11 +19,19 @@ class FileStorage:
         return FileStorage.__objects
 
     def new(self, obj):
-        pass
+        """ """
+        FileStorage.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
 
     def save(self):
-        pass
+        """ """
+        with open(FileStorage.__file_path, 'w', encoding='utf-8') as file:
+            json.dump(FileStorage.__objects, file)
 
     def reload(self):
-        pass
+        """ """
+        try:
+            with open(FileStorage.__file_path, 'r', encoding='utf-8') as file:
+                json.load(file)
+        except FileNotFoundError:
+            pass
 

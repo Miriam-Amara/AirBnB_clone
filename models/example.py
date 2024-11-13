@@ -1,12 +1,17 @@
 #!/usr/bin/python3
+# from models import FileStorage
+from models.base_model import BaseModel
 
 import inspect
 # print(inspect.getsource(TestCase))
 
+class MyClass:
+    __objects = {}
 
-def my_func(**kwargs):
-   print(kwargs)
+    def new(self):
+        self.id = "10"
+        MyClass.__objects[f"{self.__class__.__name__}.{self.id}"] = {'my_class_id': 10}
+        return MyClass.__objects
 
-new_dict = {'name': 'Abia', 'age': 20, 'gender': 'female'}
-my_func(**new_dict)
-
+new_class = MyClass()
+print(new_class.new())
