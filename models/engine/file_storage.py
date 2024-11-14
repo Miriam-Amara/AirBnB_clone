@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-print("file storage")
 """
 
 """
 
 import json
 import os
+
 
 class FileStorage:
     """
@@ -24,8 +24,11 @@ class FileStorage:
 
     def save(self):
         """ """
+        for key, value in FileStorage.__objects.items():
+            base_model_instance = value.to_dict()
+            FileStorage.__objects[key] = base_model_instance
         with open(FileStorage.__file_path, 'w', encoding='utf-8') as file:
-            json.dump(FileStorage.__objects, file)
+            json.dump(FileStorage.__objects, file, indent=4)
 
     def reload(self):
         """ """

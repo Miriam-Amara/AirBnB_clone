@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-print("base model")
 """
 
 """
@@ -7,9 +6,8 @@ print("base model")
 
 from uuid import uuid4
 from datetime import datetime
-# from models import storage
-# from models.engine.file_storage import FileStorage
-import models
+from models import storage
+
 
 class BaseModel:
     """
@@ -20,19 +18,21 @@ class BaseModel:
         """
         
         """
-        if args == () and kwargs == {}:
+        if kwargs:
+            for key, value in kwargs.items():
+                if key == "created_at":
+                    self.created_at = datetime.fromisoformat(value)
+                elif key == "updated_at":
+                    self.updated_at = datetime.fromisoformat(value)
+                elif key == "__class__":
+                    continue
+                else:
+                    setattr(self, key, value)
+        else:
             self.id = str(uuid4())
             self.created_at = datetime.now()
             self.updated_at = self.created_at
-            # storage.new(self)
-            print(self)
-        else:
-            self.id = kwargs['id']
-            self.created_at = datetime.fromisoformat(kwargs['created_at'])
-            self.updated_at = datetime.fromisoformat(kwargs['updated_at'])
-            self.name = kwargs['name']
-            self.my_number = kwargs['my_number']
-
+            storage.new(self)
 
     def __str__(self):
         """
@@ -45,8 +45,7 @@ class BaseModel:
         
         """
         self.updated_at = datetime.now()
-        # storage.save()
-        return self.updated_at
+        storage.save()
 
     def to_dict(self):
         """

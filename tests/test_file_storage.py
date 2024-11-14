@@ -15,18 +15,14 @@ class TestFileStorage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ """
-        cls.storage = FileStorage()
+        cls.store_data = FileStorage()
 
     def setUp(self):
         """ """
         self.model = BaseModel()
 
-    def test_new(self):
+    def test_new_all(self):
         """ """
-        self.storage.new(str(self.model))
-
-    def test_all(self):
-        """ """
-        self.assertIsInstance(self.storage.all(), dict)
-        print(type(self.storage.all()))
-        print('\n', self.storage.all())
+        self.store_data.new(self.model)
+        self.assertIsInstance(self.store_data.all(), dict)
+        print('\n\n', self.store_data.all())
