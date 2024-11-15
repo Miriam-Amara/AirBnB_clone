@@ -27,21 +27,16 @@ class FileStorage:
         to_json = {}
         for key, value in FileStorage.__objects.items():
             to_json[key] = value.to_dict()
-            # base_model_instance = value.to_dict()
-            # FileStorage.__objects[key] = base_model_instance
         with open(FileStorage.__file_path, "w", encoding="utf-8") as file:
             json.dump(to_json, file, indent=4)
 
     def reload(self):
-        # pass
         """ """
         try:
             with open(FileStorage.__file_path, "r", encoding="utf-8") as file:
                 from_json = json.load(file)
                 for key, value in from_json.items():
-                    # print("\n\nfrom_json values: ", value)
                     base_model = BaseModel(**value)
                     FileStorage.__objects[key] = base_model
-                # print(base_model)
         except FileNotFoundError:
             pass
