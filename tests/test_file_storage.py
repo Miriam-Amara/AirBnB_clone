@@ -12,17 +12,38 @@ class TestFileStorage(unittest.TestCase):
     """
     
     """
-    @classmethod
-    def setUpClass(cls):
-        """ """
-        cls.store_data = FileStorage()
 
     def setUp(self):
         """ """
-        self.model = BaseModel()
+        self.my_model = BaseModel()
+        self.storage = FileStorage()
+        self.storage.reload()
 
-    def test_new_all(self):
+    def tearDown(self):
         """ """
-        self.store_data.new(self.model)
-        self.assertIsInstance(self.store_data.all(), dict)
-        print('\n\n', self.store_data.all())
+        FileStorage._FileStorage__objects = {}
+
+    def test_save_first_base_model_instance(self):
+        """ """
+        try:
+            self.my_model.save()
+        except Exception:
+            self.fail(f"save method of FileStorage class failed to save {self.my_model}")
+
+    
+    def test_save_second_base_model_instance(self):
+        """ """
+        try:
+            self.my_model.save()
+        except Exception:
+            self.fail(f"save method of FileStorage class failed to save {self.my_model}")
+
+    def test_save_third_base_model_instance(self):
+        """ """
+        try:
+            self.my_model.save()
+        except Exception:
+            self.fail(f"save method of FileStorage class failed to save {self.my_model}")
+
+if __name__ == "__main__":
+    unittest.main()
