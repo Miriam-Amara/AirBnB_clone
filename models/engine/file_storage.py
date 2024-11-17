@@ -11,7 +11,7 @@ from models.base_model import BaseModel
 class FileStorage:
     """ """
 
-    __file_path = os.path.abspath("file.json")
+    __file_path = os.path.abspath("basemodel_file.json")
     __objects = {}
 
     def all(self):
@@ -20,7 +20,8 @@ class FileStorage:
 
     def new(self, obj):
         """ """
-        FileStorage.__objects[f"{obj.__class__.__name__}.{obj.id}"] = obj
+        key = f"{obj.__class__.__name__}.{obj.id}"
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """ """
@@ -38,5 +39,5 @@ class FileStorage:
                 for key, value in from_json.items():
                     base_model = BaseModel(**value)
                     FileStorage.__objects[key] = base_model
-        except FileNotFoundError:
+        except Exception:
             pass
