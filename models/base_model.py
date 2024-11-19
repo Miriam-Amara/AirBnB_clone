@@ -42,11 +42,11 @@ class BaseModel:
     def to_dict(self):
         """ """
         dict_copy = self.__dict__.copy()
-        dict_copy["__class__"] = __class__.__name__
+        dict_copy["__class__"] = self.__class__.__name__
         dict_copy["created_at"] = self.__dict__["created_at"].isoformat()
         dict_copy["updated_at"] = self.__dict__["updated_at"].isoformat()
         return dict_copy
-    
+
 
 if __name__ == "__main__":
     all_objs = models.storage.all()
