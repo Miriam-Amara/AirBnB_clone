@@ -6,6 +6,7 @@
 import json
 import os
 import keyword
+from models.base_model import BaseModel
 
 
 def validate_command_args(line, command):
@@ -19,7 +20,12 @@ def validate_command_args(line, command):
     Returns:
         str: An error message if validation fails, otherwise False.
     """
+
     command_args = line.split()
+    classes = [
+        "BaseModel", "User", "State", "City",
+        "Amenity", "Place", "Review"
+        ]
     msg0 = "** class name missing **"
     msg1 = "** class doesn't exist **"
     msg2 = "** instance id missing **"
@@ -34,14 +40,14 @@ def validate_command_args(line, command):
     if not command_args:
         return error_messages[command][0]  # class name missing
 
-    if command_args[0] != "BaseModel" and command != "create":
+    if command_args[0] not in classes and command != "create":
         return error_messages[command][1]  # class doesn't exist
 
     if len(command_args) < 2 and command in ["show", "destroy", "update"]:
         return error_messages[command][2]  # instance id missing
 
     if command == "create" and (
-        len(command_args) > 1 or command_args[0] != "BaseModel"
+        len(command_args) > 1 or command_args[0] not in classes
     ):
         return error_messages[command][1]  # class doesn't exist in create
 
@@ -54,72 +60,27 @@ def validate_command_args(line, command):
     return False
 
 
-def read_basemodel_file():
+def id_exists(object_id, class_name, all_instances):
     """
-    Reads and returns the data from 'basemodel_file.json'.
-
-    Returns:
-        dict: The data loaded from the JSON file,
-        containing all BaseModel instances.
-
-    Raises:
-        FileNotFoundError: If the file does not exist.
-        json.JSONDecodeError: If the file content is not valid JSON.
-    """
-    file_path = os.path.abspath("basemodel_file.json")
-    try:
-        with open(file_path, "r") as file:
-            all_basemodel_instance = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error reading file: {e}")
-    return all_basemodel_instance
-
-
-def write_to_basemodel_file(basemodel_instances):
-    """
-    Writes the given dictionary of basemodel instances
-    to 'basemodel_file.json'.
-
-    Args:
-        basemodel_instances (dict): The dictionary to write to the file.
-
-    Raises:
-        TypeError: If the provided argument is not a dictionary.
-    """
-    file_path = os.path.abspath("basemodel_file.json")
-    if basemodel_instances and isinstance(basemodel_instances, dict):
-        try:
-            with open(file_path, "w") as file:
-                json.dump(basemodel_instances, file, indent=4)
-        except IOError as e:
-            print(f"Error writing to file: {e}")
-    else:
-        raise TypeError("Expected a dictionary for 'basemodel_instances'.")
-
-
-def id_exists(object_id, all_instances):
-    """
-    Checks if the provided object_id matches
-    any instance ID in basemodel_instances.
+    Check if the provided object_id exists in all_instances.
 
     Args:
         object_id (str): The ID to search for.
-        basemodel_instances (dict, optional): A dictionary of instances,
-            where each value is a dictionary containing an "id" key.
+        all_instances (dict): A dictionary of instances, where each value
+            is an object that provides a "to_dict" method and contains an "id" key.
 
     Returns:
         tuple: A tuple (key, instance_dict) if a match is found.
-        None: If no match is found.
-
-    Raises:
-        TypeError: If basemodel_instances is not a dictionary.
+        None: If no match is found or an error occurs.
     """
-    if all_instances and isinstance(all_instances, dict):
+    try:
         for key, instance_dict in all_instances.items():
-            if object_id == instance_dict["id"]:
+            instance_dict = instance_dict.to_dict()
+            if (object_id == instance_dict["id"] and
+                class_name == instance_dict["__class__"]):
                 return (key, instance_dict)
-    else:
-        raise TypeError("Expected a dictionary for 'basemodel_instances'.")
+    except Exception as e:
+        print(e)
     return None
 
 
