@@ -62,10 +62,10 @@ Additionally, **built** a command Interperter (interactive shell) to manage the 
 
 ## Technologies Used
 
-**Programming Language:** Python
-**Storage:** JSON-based file storage
-**Version control:** Git/GitHub
-**Testing:** Unittest
+- **Programming Language:** Python
+- **Storage:** JSON-based file storage
+- **Version control:** Git/GitHub
+- **Testing:** Unittest
 
 ---
 
