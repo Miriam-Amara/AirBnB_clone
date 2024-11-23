@@ -20,7 +20,7 @@
 
 
 
-## 1. Project Overview
+## Project Overview
 
 This project is a clone of AirBnB web application for learning purposes. AirBnB is an online application that connects property owners with travelers looking for short-term rentals.
 
@@ -37,7 +37,7 @@ The project is divided into **7 phases*, each building upon the previous to repl
 
 
 
-## 2. Phases
+## Phases
 
 ### The Console
 
@@ -60,7 +60,7 @@ Additionally, **built** a command Interperter (interactive shell) to manage the 
 
 
 
-## 3. Technologies Used
+## Technologies Used
 
 **Programming Language:** Python
 **Storage:** JSON-based file storage
@@ -71,7 +71,7 @@ Additionally, **built** a command Interperter (interactive shell) to manage the 
 
 
 
-## 4. Features
+## Features
 
 - Object serialization and deserialization.
 - Dynamic command parsing (ex: ClassName.command(arguments))
@@ -79,7 +79,7 @@ Additionally, **built** a command Interperter (interactive shell) to manage the 
 - Interactive and non-interactive modes.
 
 
-## 5. Project Stat
+## Project Stat
 
 Ongoing
 
