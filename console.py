@@ -1,26 +1,54 @@
 #!/usr/bin/python3
 
 """
+Module for the HBNB command interpreter.
 
+Defines the 'HBNBCommand' class, which provides commands to manage
+objects in the HBNB application.
 """
 
 
+import ast
 import cmd
 import re
-import ast
 import f_console_functions as cf
 from models import storage
 from models.base_model import BaseModel
-from models.user import User
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
+from models.user import User
 
 
 class HBNBCommand(cmd.Cmd):
-    """ """
+    """
+    Command interpreter for the HBNB application.
+
+    This class provides commands to manage objects such as 'BaseModel',
+    'User', 'State', 'City', 'Amenity', 'Place', and 'Review'.
+
+    Supported commands include:
+        - 'create': Creates a new object.
+        - 'show': Displays an object by ID.
+        - 'destroy': Deletes an object by ID.
+        - 'all': Displays all objects or those of a specific class.
+        - 'update': Updates an object with attributes.
+        - 'count': Counts objects of a specific class.
+
+    Attributes:
+        prompt (str): The command prompt displayed to the user.
+        __classes (dict): A mapping of class names to their corresponding
+                          classes.
+
+    Usage:
+        Enter interactive mode by running the command interpreter.
+        Use the available commands to interact with the application.
+
+    Type 'help' or '?' at the prompt for a list of available commands.
+    Type 'help <command>' for command details.
+    """
 
     prompt = "(hbnb) "
     __classes = {
@@ -55,6 +83,7 @@ class HBNBCommand(cmd.Cmd):
         Usage:
             create <class name>
             <class name>.create()
+            # replace <class name> with the actual value
         """
         err_message = cf.validate_command_args(line, "create")
 
@@ -63,12 +92,19 @@ class HBNBCommand(cmd.Cmd):
         else:
             cls_name = line.split()[0]
             # create a new instance for the given class
-            new_instance = HBNBCommand.__classes[cls_name]()
-            new_instance.save()
-            print(new_instance.id)
+            new_obj = HBNBCommand.__classes[cls_name]()
+            new_obj.save()
+            print(new_obj.id)
 
     def do_count(self, line):
-        """ """
+        """
+        Counts the number of instances of a specific class.
+
+        Usage:
+            count <class name>
+            <class name>.count()
+            # replace <class name> with the actual value
+        """
         err_message = cf.validate_command_args(line, "count")
 
         if err_message:
@@ -76,10 +112,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             cls_name = line.split()[0]
             count = 0
-            inst_addr = list(storage.all().values())
-            for i in range(len(inst_addr)):
-                inst_dict = inst_addr[i].to_dict()
-                if inst_dict["__class__"] == cls_name:
+            for obj in storage.all().values():
+                if cls_name == obj.__class__.__name__:
                     count += 1
             print(count)
 
@@ -99,13 +133,11 @@ class HBNBCommand(cmd.Cmd):
         if err_message:
             print(err_message)
         else:
-            cls_name, inst_id = line.split()[0:2]
-            all_instances = storage.all()
-            # checks if the id exists for the class
-            inst_info = cf.id_exists(inst_id, cls_name, all_instances)
-            if inst_info:
-                inst = inst_info[1]
-                print(inst)
+            cls_name, obj_id = line.split()[0:2]
+            all_objects = storage.all()
+            obj_info = cf.id_exists(cls_name, obj_id, all_objects)
+            if obj_info:
+                print(obj_info[1])  # Display string representation of object
             else:
                 print("** no instance found **")
 
@@ -122,12 +154,11 @@ class HBNBCommand(cmd.Cmd):
         if err_message:
             print(err_message)
         else:
-            cls_name, inst_id = line.split()[0:2]
-            all_instances = storage.all()
-            inst_info = cf.id_exists(inst_id, cls_name, all_instances)
-            if inst_info:
-                id_key = inst_info[0]
-                del all_instances[id_key]
+            cls_name, obj_id = line.split()[0:2]
+            all_objects = storage.all()
+            obj_info = cf.id_exists(cls_name, obj_id, all_objects)
+            if obj_info:
+                del all_objects[obj_info[0]]
                 storage.save()
             else:
                 print("** no instance found **")
@@ -145,24 +176,19 @@ class HBNBCommand(cmd.Cmd):
             <class name>.all() # Lists all instances of the specified class
             # replace <class name> with the actual value
         """
-        cls = HBNBCommand.__classes
-        inst_addr = list(storage.all().values())
-
+        obj_ref = storage.all().values()
         if line:
             cls_name = line.split()[0]
-            if cls_name in cls:
-                filtered_inst = []
-                for inst in inst_addr:
-                    inst_dict = inst.to_dict()
-                    if inst_dict["__class__"] == cls_name:
-                        filtered_inst.append(str(inst))
-                print(filtered_inst)
+            if cls_name in HBNBCommand.__classes:
+                filtered_obj = [str(obj) for obj in obj_ref
+                                if cls_name == obj.__class__.__name__]
+                print(filtered_obj)
             else:
                 print("** class doesn't exist **")
         else:
 
-            all_inst_str = [str(inst) for inst in inst_addr]
-            print(all_inst_str)
+            all_obj_str = [str(obj) for obj in obj_ref]
+            print(all_obj_str)
 
     def do_update(self, line):
         """
@@ -180,30 +206,40 @@ class HBNBCommand(cmd.Cmd):
             print(err_message)
 
         else:
-            cls_name, inst_id, attr_data = args.split(maxsplit=2)
-            all_instances = storage.all()
-            inst_info = cf.id_exists(inst_id, cls_name, all_instances)
+            cls_name, obj_id, attr_data = args.split(maxsplit=2)
+            all_objects = storage.all()
+            obj_info = cf.id_exists(cls_name, obj_id, all_objects)
             try:
-                # Parse string representation of dictionary into a Python dict
+                # Convert string representation of dictionary to a Python dict
                 attr_dict = ast.literal_eval(attr_data)
             except (ValueError, SyntaxError) as e:
-                print(f"Did you parse a dictionary? If Yes! -> Failed to parse dictionary: {e}")
+                print(
+                    "Did you parse a dictionary? If Yes! "
+                    f"-> Failed to parse dictionary: {e}"
+                )
                 attr_name, attr_value = attr_data.split()[0:2]
                 attr_value = cf.convert_value_type(attr_value)
                 attr_dict = {attr_name: attr_value}
 
-            if inst_info:
-                instance = inst_info[1]
+            if obj_info:
+                obj = obj_info[1]
                 for attr_name, attr_value in attr_dict.items():
                     attr_name = attr_name.strip('"')
                     if cf.validate_attribute(attr_name):
-                        setattr(instance, attr_name, attr_value)
-                instance.save()
+                        setattr(obj, attr_name, attr_value)
+                obj.save()
             else:
                 print("** no instance found **")
 
     def default(self, line):
-        """ """
+        """
+        Handles input that doesn't match standard commands.
+
+        This method checks if the input follows the format
+        <class name>.<command>(<arguments>). If it does,
+        it runs the corresponding command for the class.
+        Otherwise, it prints an error message.
+        """
         cmd_dict = {
             "create": self.do_create,
             "count": self.do_count,
@@ -216,7 +252,7 @@ class HBNBCommand(cmd.Cmd):
         is_valid_cmd = re.search(cmd_pattern, line)
         if is_valid_cmd:
             cls_name, cmd, inst_id = is_valid_cmd.groups()
-            if cmd in cmd_dict.keys():
+            if cmd in cmd_dict:
                 if cmd != "update":
                     inst_id = inst_id.strip('"')
                 args = f"{cls_name} {inst_id}"
