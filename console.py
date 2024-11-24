@@ -254,7 +254,7 @@ class HBNBCommand(cmd.Cmd):
             cls_name, cmd, inst_id = is_valid_cmd.groups()
             if cmd in cmd_dict:
                 if cmd != "update":
-                    inst_id = inst_id.strip('"')
+                    inst_id = inst_id.strip("'\"")
                 args = f"{cls_name} {inst_id}"
                 cmd_dict[cmd](args)
             else:
