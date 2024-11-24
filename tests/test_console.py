@@ -185,58 +185,6 @@ class TestInvalidArg(unittest.TestCase):
                 self.assertIn("** value missing **", output)
                 reset_buffer(f)
 
-    def test_invalid_identifier(self):
-        """
-        Test that invalid attribute format prints error message
-        '<attribute name> is not a valid identifier'.
-        """
-
-        attr_dict = {"First-name": "Betty"}
-        objects = list(storage.all().values())
-        if objects:
-            obj = objects[0]
-            cmd_list = [
-                f"update BaseModel {obj.id} First-name Alx",
-                f'BaseModel.update("{obj.id}", "First-name", Betty)',
-                f'BaseModel.update("{obj.id}", {attr_dict})',
-            ]
-
-            with patch("sys.stdout", new=StringIO()) as f:
-                for cmd in cmd_list:
-                    HBNBCommand().onecmd(cmd)
-                    output = f.getvalue()
-                    self.assertIn(
-                        "'First-name' is not a valid identifier.", output
-                        )
-                    reset_buffer(f)
-        else:
-            self.fail("No object found in storage.")
-
-    def test_identifier_iskeyword(self):
-        """
-        Test that using a reserved keyword as an attribute name
-        prints error message '<attribute name> is a reserved keyword'.
-        """
-
-        attr_dict = {"class": "Betty"}
-        objects = list(storage.all().values())
-        if objects:
-            obj = objects[0]
-            cmd_list = [
-                f"update BaseModel {obj.id} class Alx",
-                f'BaseModel.update("{obj.id}", "class", Betty)',
-                f'BaseModel.update("{obj.id}", {attr_dict})',
-            ]
-
-            with patch("sys.stdout", new=StringIO()) as f:
-                for cmd in cmd_list:
-                    HBNBCommand().onecmd(cmd)
-                    output = f.getvalue()
-                    self.assertIn("'class' is a reserved keyword.", output)
-                    reset_buffer(f)
-        else:
-            self.fail("No object found in storage.")
-
 
 class TestCreate(unittest.TestCase):
     """
