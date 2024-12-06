@@ -213,10 +213,10 @@ class HBNBCommand(cmd.Cmd):
                 # Convert string representation of dictionary to a Python dict
                 attr_dict = ast.literal_eval(attr_data)
             except (ValueError, SyntaxError) as e:
-                print(
-                    "Did you parse a dictionary? If Yes! "
-                    f"-> Failed to parse dictionary: {e}"
-                )
+                # print(
+                #     "Did you parse a dictionary? If Yes! "
+                #     f"-> Failed to parse dictionary: {e}"
+                # )
                 attr_name, attr_value = attr_data.split()[0:2]
                 attr_value = cf.convert_value_type(attr_value)
                 attr_dict = {attr_name: attr_value}
